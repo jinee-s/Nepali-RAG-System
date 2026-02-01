@@ -1,0 +1,109 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Flask
+instance/
+.webassets-cache
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+rag_system.log
+
+# FAISS and Model Cache
+nepali_vectorstore_*/
+checkpoints/
+D:/huggingface_cache/
+D:/temp/
+
+# Large Corpus Directories (exclude from git)
+ArthaBanijya/
+Bichar/
+Desh/
+Khelkud/
+Manoranjan/
+Prabas/
+Sahitya/
+SuchanaPrabidhi/
+Swasthya/
+Viswa/
+train/
+valid/
+
+# Large Data Files
+*.txt
+!requirements.txt
+!Procfile
+cleaned_nepali_corpus.txt
+ne_dedup.txt
+evaluation_data.csv
+evaluation_set.csv
+
+# Model files
+*.pkl
+*.faiss
+*.bin
+*.pt
+*.pth
+*.h5
+*.onnx
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp

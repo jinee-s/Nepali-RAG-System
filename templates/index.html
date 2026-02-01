@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nepali RAG System - प्रश्न उत्तर प्रणाली</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, 'Noto Sans Devanagari';
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            max-width: 1000px;
+            width: 100%;
+            padding: 45px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 45px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 25px;
+        }
+
+        .header h1 {
+            color: #1e293b;
+            font-size: 2.2em;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            color: #64748b;
+            font-size: 1.05em;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            font-size: 1.1em;
+            color: #1e293b;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 1.05em;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 110px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #475569;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(71, 85, 105, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 28px;
+            font-size: 1.05em;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #334155;
+            color: white;
+            border: 2px solid #334155;
+        }
+
+        .btn-primary:hover {
+            background: #1e293b;
+            border-color: #1e293b;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(30, 41, 59, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            border: 2px solid #cbd5e1;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            border-color: #94a3b8;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-section {
+            display: none;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .result-section.active {
+            display: block;
+        }
+
+        .result-title {
+            font-size: 1.2em;
+            color: #1e293b;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .answer-box {
+            background: #f8fafc;
+            padding: 22px;
+            border-radius: 8px;
+            border-left: 4px solid #334155;
+            margin-bottom: 24px;
+            line-height: 1.8;
+            font-size: 1.08em;
+            color: #1e293b;
+        }
+
+        .context-box {
+            background: #f8fafc;
+            padding: 22px;
+            border-radius: 8px;
+            border-left: 4px solid #64748b;
+            max-height: 320px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 0.95em;
+            color: #475569;
+        }
+
+        .error-box {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #c62828;
+            margin-top: 20px;
+        }
+
+        .examples {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .examples h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .example-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .chip {
+            background: #f1f5f9;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95em;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+        }
+
+        .chip:hover {
+            background: #334155;
+            color: white;
+            border-color: #334155;
+            transform: translateY(-1px);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .stat-label {
+            font-size: 0.88em;
+            color: #64748b;
+            margin-top: 6px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🇳🇵 Nepali RAG System</h1>
+            <p>नेपाली प्रश्न उत्तर प्रणाली - AI द्वारा संचालित</p>
+        </div>
+
+        <div class="input-section">
+            <label for="question">📝 आफ्नो प्रश्न यहाँ लेख्नुहोस्:</label>
+            <textarea 
+                id="question" 
+                placeholder="उदाहरण: नेपालको राजधानी के हो?"
+                rows="4"
+            ></textarea>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-primary" onclick="askQuestion()">
+                💬 प्रश्न सोध्नुहोस्
+            </button>
+            <button class="btn-secondary" onclick="clearAll()">
+                🔄 रिसेट गर्नुहोस्
+            </button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>कृपया पर्खनुहोस्, उत्तर खोजिदै छ...</p>
+        </div>
+
+        <div class="result-section" id="results">
+            <h2 class="result-title">✨ उत्तर:</h2>
+            <div class="answer-box" id="answer"></div>
+
+            <h3 class="result-title">📚 सन्दर्भ:</h3>
+            <div class="context-box" id="context"></div>
+
+            <div class="stats" id="stats"></div>
+        </div>
+
+        <div class="examples">
+            <h3>💡 उदाहरण प्रश्नहरू:</h3>
+            <div class="example-chips">
+                <span class="chip" onclick="setExample('नेपालको राजधानी के हो?')">नेपालको राजधानी के हो?</span>
+                <span class="chip" onclick="setExample('नेपालमा कति वटा प्रदेश छन्?')">नेपालमा कति वटा प्रदेश छन्?</span>
+                <span class="chip" onclick="setExample('सगरमाथाको उचाइ कति छ?')">सगरमाथाको उचाइ कति छ?</span>
+                <span class="chip" onclick="setExample('नेपालको राष्ट्रिय भाषा के हो?')">नेपालको राष्ट्रिय भाषा के हो?</span>
+                <span class="chip" onclick="setExample('गण्डकी प्रदेशको राजधानी कहाँ हो?')">गण्डकी प्रदेशको राजधानी कहाँ हो?</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function askQuestion() {
+            const question = document.getElementById('question').value.trim();
+            
+            if (!question) {
+                alert('कृपया प्रश्न लेख्नुहोस्!');
+                return;
+            }
+
+            // Show loading, hide results
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('results').classList.remove('active');
+
+            // Disable button
+            const button = event.target;
+            button.disabled = true;
+
+            try {
+                const response = await fetch('/api/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayResults(data);
+                } else {
+                    displayError(data.error || 'Unknown error occurred');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                displayError('सर्भरसँग सम्पर्क गर्न सकिएन। कृपया पुन: प्रयास गर्नुहोस्।');
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+                button.disabled = false;
+            }
+        }
+
+        function displayResults(data) {
+            document.getElementById('answer').textContent = data.answer;
+            document.getElementById('context').textContent = data.context;
+            
+            // Display stats
+            const statsHtml = `
+                <div class="stat-card">
+                    <div class="stat-value">${data.scores.length}</div>
+                    <div class="stat-label">Retrieved Docs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${data.scores[0].toFixed(3)}</div>
+                    <div class="stat-label">Top Score</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${new Date(data.timestamp).toLocaleTimeString('ne-NP')}</div>
+                    <div class="stat-label">Time</div>
+                </div>
+            `;
+            document.getElementById('stats').innerHTML = statsHtml;
+            
+            document.getElementById('results').classList.add('active');
+        }
+
+        function displayError(message) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `<div class="error-box">❌ Error: ${message}</div>`;
+            resultsDiv.classList.add('active');
+        }
+
+        function setExample(text) {
+            document.getElementById('question').value = text;
+        }
+
+        function clearAll() {
+            document.getElementById('question').value = '';
+            document.getElementById('results').classList.remove('active');
+            document.getElementById('loading').classList.remove('active');
+        }
+
+        // Allow Enter key to submit (with Shift+Enter for new line)
+        document.getElementById('question').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                askQuestion();
+            }
+        });
+
+        // Check server health on load
+        async function checkHealth() {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                console.log('Server health:', data);
+            } catch (error) {
+                console.error('Health check failed:', error);
+            }
+        }
+
+        checkHealth();
+    </script>
+</body>
+</html>
