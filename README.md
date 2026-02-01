@@ -2,6 +2,8 @@
 
 A production-ready Flask web application for deploying a Retrieval-Augmented Generation (RAG) system for Nepali language Question-Answering using FAISS, BGE-M3 embeddings, and Google Gemini.
 
+> Retrieval-Augmented Generation (RAG) system for Nepali, enabling context-aware question answering over a custom document corpus.
+
 ## 🚀 Features
 
 - **Fast Semantic Search**: Uses FAISS vector database with 100K+ Nepali text entries
@@ -287,3 +289,4 @@ For issues or questions, please create a GitHub issue.
 ---
 
 **Built with ❤️ for Nepali NLP**
+
